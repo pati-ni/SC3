@@ -6,13 +6,36 @@
 
 using namespace Rcpp;
 
+// update_coverage_matrix
+void update_coverage_matrix(arma::mat& coverage, arma::rowvec& subsample);
+RcppExport SEXP _SC3_update_coverage_matrix(SEXP coverageSEXP, SEXP subsampleSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat& >::type coverage(coverageSEXP);
+    Rcpp::traits::input_parameter< arma::rowvec& >::type subsample(subsampleSEXP);
+    update_coverage_matrix(coverage, subsample);
+    return R_NilValue;
+END_RCPP
+}
+// subsample_merge
+void subsample_merge(arma::mat& subsample_consensus, arma::mat& global_consensus, arma::rowvec& subsample_map);
+RcppExport SEXP _SC3_subsample_merge(SEXP subsample_consensusSEXP, SEXP global_consensusSEXP, SEXP subsample_mapSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< arma::mat& >::type subsample_consensus(subsample_consensusSEXP);
+    Rcpp::traits::input_parameter< arma::mat& >::type global_consensus(global_consensusSEXP);
+    Rcpp::traits::input_parameter< arma::rowvec& >::type subsample_map(subsample_mapSEXP);
+    subsample_merge(subsample_consensus, global_consensus, subsample_map);
+    return R_NilValue;
+END_RCPP
+}
 // consmx
-arma::mat consmx(const arma::mat dat, int K);
+arma::mat consmx(const arma::mat& dat, int K);
 RcppExport SEXP _SC3_consmx(SEXP datSEXP, SEXP KSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::mat >::type dat(datSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type dat(datSEXP);
     Rcpp::traits::input_parameter< int >::type K(KSEXP);
     rcpp_result_gen = Rcpp::wrap(consmx(dat, K));
     return rcpp_result_gen;
@@ -42,6 +65,8 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_SC3_update_coverage_matrix", (DL_FUNC) &_SC3_update_coverage_matrix, 2},
+    {"_SC3_subsample_merge", (DL_FUNC) &_SC3_subsample_merge, 3},
     {"_SC3_consmx", (DL_FUNC) &_SC3_consmx, 2},
     {"_SC3_tmult", (DL_FUNC) &_SC3_tmult, 1},
     {"_SC3_distance_to_adjacency_mat", (DL_FUNC) &_SC3_distance_to_adjacency_mat, 1},

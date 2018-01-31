@@ -37,7 +37,7 @@ calculate_distance <- function(data, method) {
     ## This environment variable is only set through the function execution
     ## as we unset its value when we are done with the transformation
     Sys.setenv("OMP_NUM_THREADS" = "1")
-    
+    message(paste0("Data Size: " , ncol(data), " ",nrow(data)))
     if (method == "spearman") {
         mat <- as.matrix(1 - pcor(apply(data, 2, rank)))
     } else if (method == "pearson") {
@@ -77,7 +77,7 @@ transformation <- function(dists, method, n_dim) {
     ## Set omp number of available threads
     ## see calculate_distance for more 
     Sys.setenv("OMP_NUM_THREADS" = "1")
-    
+    message(paste0("Data Size: " , ncol(dists), " ",nrow(dists)))
     if (method == "pca") {
         # Perform pca on the fly
         t <- trlan.svd(covar(scaler(dists)), neig = n_dim)
@@ -153,23 +153,28 @@ support_vector_machines <- function(train, study, kern) {
 #' @param svm_max define the maximum number of cells below which SVM is not run
 #' @return A list of indeces of the train and the study cells
 prepare_for_svm <- function(N, svm_num_cells = NULL, svm_train_inds = NULL, svm_max) {
-    
-    if (!is.null(svm_num_cells)) {
-        message("Defining training cells for SVM using svm_num_cells parameter...")
-        train_inds <- sample(1:N, svm_num_cells)
-        study_inds <- setdiff(1:N, train_inds)
-    }
-    
     if (!is.null(svm_train_inds)) {
         message("Defining training cells for SVM using svm_train_inds parameter...")
         train_inds <- svm_train_inds
         study_inds <- setdiff(1:N, svm_train_inds)
-    }
-    
-    if (is.null(svm_num_cells) & is.null(svm_train_inds)) {
-        message(paste0("Defining training cells for SVM using ", svm_max, " random cells..."))
-        train_inds <- sample(1:N, svm_max)
-        study_inds <- setdiff(1:N, train_inds)
+    }else{
+        if (!is.null(svm_num_cells)) {
+            message("Defining training cells for SVM using svm_num_cells parameter...")
+            sample_size <- svm_num_cells
+
+        }else if (!is.null(svm_max)) {
+            message(paste0("Defining training cells for SVM using ", svm_max, " random cells..."))
+            sample_size <- svm_max
+        }
+        
+        if (!is.null(sample_size)){
+            sample_size <- max(N,sample_size)
+            train_inds <- sample(1:N, sample_size)
+            study_inds <- setdiff(1:N, train_inds)
+        }
+        else{
+            stop("Error in svm configuration, no sample size parameters supplied")
+        }
     }
     
     return(list(svm_train_inds = train_inds, svm_study_inds = study_inds))

@@ -13,6 +13,17 @@ setGeneric("sc3_estimate_k", signature = "object", function(object) {
 })
 
 #' @export
+setGeneric("sc3_gene_filter", signature = "object", function(object) {
+    standardGeneric("sc3_gene_filter")
+})
+
+#' @export
+setGeneric("sc3_svm_subsampling", signature = "object", function(object) {
+    standardGeneric("sc3_svm_subsampling")
+})
+
+
+#' @export
 setGeneric("sc3_prepare", function(object, gene_filter = TRUE, 
         pct_dropout_min = 10, pct_dropout_max = 90, d_region_min = 0.04, 
         d_region_max = 0.07, svm_num_cells = NULL, svm_train_inds = NULL, 
